@@ -44,8 +44,4 @@ public class Bookshop {
       return "Person [id=" + id + ", name=" + title + ", userName=" + userName + ", price=" + price + ", date=" + date + "]";
    }
 
-   public void setTitle(String title) {
-      this.title = title;
-   }
-
 }
