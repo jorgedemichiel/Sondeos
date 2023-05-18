@@ -10,11 +10,19 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "users")
 @Data
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Bookshop {
    @Id
    @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,18 +39,6 @@ public class Bookshop {
    @CreatedDate
    private LocalDate date;
 
-   public Bookshop() {
-
-   }
-
-   public Bookshop(Long id, String title, String userName, Double price, LocalDate date) {
-      this.id = id;
-      this.title = title;
-      this.userName = userName;
-      this.price = price;
-      this.date = date;
-   }
-
    @Override
    public String toString() {
       return "Person [id=" + id + ", name=" + title + ", userName=" + userName + ", price=" + price + ", date=" + date + "]";
@@ -52,19 +48,4 @@ public class Bookshop {
       this.title = title;
    }
 
-   public void setUserName(String userName) {
-      this.userName = userName;
-   }
-
-   public void setPrice(Double price) {
-      this.price = price;
-   }
-
-   public void setDate(LocalDate date) {
-      this.date = date;
-   }
-
-   public Book get() {
-      return null;
-   }
 }

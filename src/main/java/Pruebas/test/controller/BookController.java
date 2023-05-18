@@ -16,52 +16,46 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import Pruebas.test.models.Bookshop;
-import Pruebas.test.repository.BookRepository;
+import Pruebas.test.service.BookService;
 
 @RestController
 @RequestMapping("/api")
 public class BookController {
 
    @Autowired
-   private BookRepository repository;
+   private BookService bookService;
 
    @GetMapping("/books")
-   public List<Bookshop> allBooks(){
-      return repository.findAll();
+   public List<Bookshop> allBooks() {
+      return bookService.getAllBooks();
    }
 
    @GetMapping("/book/{title}")
    public List<Bookshop> findByTitle(@PathVariable("title") String title) {
-      return repository.findByTitle(title);
+      return bookService.findByTitle(title);
    }
 
    @PostMapping("/book")
    public ResponseEntity<Bookshop> createBook(@RequestBody Bookshop book) {
-     Bookshop bookSaved = repository.save(book);
-      return new ResponseEntity<Bookshop>(bookSaved, HttpStatus.CREATED);
+      Bookshop bookSaved = bookService.createBook(book);
+      return new ResponseEntity<>(bookSaved, HttpStatus.CREATED);
    }
 
    @PutMapping("/book/{id}")
    public ResponseEntity<Bookshop> updateBook(@PathVariable Long id, @RequestBody Bookshop book) {
-      Optional<Bookshop> bookshop = repository.findById(id);
+      Optional<Bookshop> updatedBook = bookService.updateBook(id, book);
 
-      if (bookshop.isPresent()) {
-         Bookshop updatedBook = bookshop.get();
-         updatedBook.setTitle(book.getTitle());
-         updatedBook.setUserName(book.getUserName());
-         updatedBook.setDate(book.getDate());
-
-         Bookshop savedBook = repository.save(updatedBook);
-         return ResponseEntity.ok(savedBook);
+      if (updatedBook.isPresent()) {
+         return ResponseEntity.ok(updatedBook.get());
       } else {
          return ResponseEntity.notFound().build();
       }
    }
 
-
    @DeleteMapping("/book/{id}")
-   public void deleteBook(@PathVariable("id") Long id) {
-      repository.deleteById(id);
+   public ResponseEntity<Void> deleteBook(@PathVariable("id") Long id) {
+      bookService.deleteBook(id);
+      return ResponseEntity.noContent().build();
    }
 
 }
