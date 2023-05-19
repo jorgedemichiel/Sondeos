@@ -5,99 +5,70 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
-import Pruebas.test.models.Bookshop;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import Pruebas.test.models.Book;
 import Pruebas.test.repository.BookRepository;
 import Pruebas.test.service.BookService;
 
 @RunWith(MockitoJUnitRunner.class)
 public class BookServiceTest {
 
-   @Mock
-   private BookRepository repository;
-
    @InjectMocks
    private BookService bookService;
+   @Mock
+   private BookRepository bookRepository;
 
    @Test
    public void testGetAllBooks() {
-      List<Bookshop> books = Arrays.asList(new Bookshop(1L, "Libro 1", "Usuario 1", 10.0, LocalDate.now()),
-            new Bookshop(2L, "Libro 2", "Usuario 2", 15.0, LocalDate.now()),
-            new Bookshop(3L, "Libro 3", "Usuario 3", 20.0, LocalDate.now()),
-            new Bookshop(4L, "Libro 4", "Usuario 4", 25.0, LocalDate.now()));
+      List<Book> books = Arrays.asList(
+            new Book(1L, "1984", "George Orwell", 10.0, LocalDate.now()),
+            new Book(2L, "To Kill a Mockingbird", "Harper Lee", 15.0, LocalDate.now()));
+      Pageable page = PageRequest.of(0, 10);
+      Page<Book> expectedPage = new PageImpl<>(books, page, books.size());
 
-      Mockito.when(repository.findAll()).thenReturn(books);
-      List<Bookshop> result = bookService.getAllBooks();
+      Mockito.when(bookRepository.findAll(page)).thenReturn(expectedPage);
+      Page<Book> result = bookService.getAllBooks(0, 10);
 
-      Assert.assertEquals(4, result.size());
-      Assert.assertEquals("Libro 1", result.get(0).getTitle());
-      Assert.assertEquals("Usuario 1", result.get(0).getUserName());
+      Assert.assertEquals(expectedPage, result);
    }
 
    @Test
    public void testCreateBook() {
-      Bookshop book = new Bookshop(null, "Libro nuevo", "Usuario 3", 20.0, LocalDate.now());
+      Book book = new Book(1L, "1984", "George Orwell", 10.0, LocalDate.now());
 
-      Mockito.when(repository.save(Mockito.any(Bookshop.class))).thenAnswer(invocation -> {
-         Bookshop bookArg = invocation.getArgument(0);
-         bookArg.setId(1L);
-         return bookArg;
-      });
+      Mockito.when(bookRepository.save(book)).thenReturn(book);
+      Book result = bookService.createBook(book);
 
-      Bookshop result = bookService.createBook(book);
-
-      Assert.assertNotNull(result.getId());
-      Assert.assertEquals("Libro nuevo", result.getTitle());
-      Assert.assertEquals("Usuario 3", result.getUserName());
+      Assert.assertEquals(book, result);
    }
 
    @Test
-   public void testFindByTitle() {
-      List<Bookshop> books = Arrays.asList(
-            new Bookshop(1L, "Libro 1", "Usuario 1", 10.0, LocalDate.now()),
-            new Bookshop(2L, "Libro 1", "Usuario 2", 15.0, LocalDate.now())
-      );
+   public void testUpdateBook_NotFound() {
+      Long id = 1L;
+      Book updatedBook = new Book(id, "Animal Farm", "George Orwell", 12.0, LocalDate.now());
 
-      Mockito.when(repository.findByTitle("Libro 1")).thenReturn(books);
-
-      List<Bookshop> result = bookService.findByTitle("Libro 1");
-
-      Assert.assertEquals(2, result.size());
-   }
-
-   @Test
-   public void testUpdateBook() {
-      Bookshop book = new Bookshop(1L, "Libro 1", "Usuario 1", 10.0, LocalDate.now());
-
-      Mockito.when(repository.findById(1L)).thenReturn(Optional.of(book));
-      Mockito.when(repository.save(Mockito.any(Bookshop.class))).thenReturn(book);
-
-      Optional<Bookshop> result = bookService.updateBook(1L, book);
-
-      Assert.assertTrue(result.isPresent());
-      Assert.assertEquals("Libro 1", result.get().getTitle());
-      Assert.assertEquals("Usuario 1", result.get().getUserName());
-   }
-
-   @Test
-   public void testUpdateBook_BookNotFound() {
-      Mockito.when(repository.findById(1L)).thenReturn(Optional.empty());
-
-      Optional<Bookshop> result = bookService.updateBook(1L, new Bookshop());
+      Mockito.when(bookRepository.findById(id)).thenReturn(Optional.empty());
+      Optional<Book> result = bookService.updateBook(id, updatedBook);
 
       Assert.assertFalse(result.isPresent());
    }
 
    @Test
    public void testDeleteBook() {
-      bookService.deleteBook(1L);
+      Long id = 1L;
+      bookService.deleteBook(id);
 
-      Mockito.verify(repository).deleteById(1L);
+      Mockito.verify(bookRepository, Mockito.times(1)).deleteById(id);
    }
-
 }

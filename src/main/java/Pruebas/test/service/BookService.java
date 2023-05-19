@@ -1,39 +1,43 @@
 package Pruebas.test.service;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import Pruebas.test.models.Bookshop;
+import org.springframework.transaction.annotation.Transactional;
+import Pruebas.test.models.Book;
 import Pruebas.test.repository.BookRepository;
 
 @Service
+@Transactional
 public class BookService {
+   private static final int PAGE_SIZE = 10;
 
    @Autowired
    private BookRepository repository;
 
-   public List<Bookshop> getAllBooks() {
-      return repository.findAll();
+   public Page<Book> getAllBooks(int currentPage, int size) {
+      Pageable page = PageRequest.of(currentPage, size);
+
+      return repository.findAll(page);
+
    }
 
-   public List<Bookshop> findByTitle(String title) {
-      return repository.findByTitle(title);
-   }
-
-   public Bookshop createBook(Bookshop book) {
+   public Book createBook(Book book) {
       return repository.save(book);
    }
 
-   public Optional<Bookshop> updateBook(Long id, Bookshop book) {
-      Optional<Bookshop> bookshop = repository.findById(id);
+   public Optional<Book> updateBook(Long id, Book book) {
+      Optional<Book> bookshop = repository.findById(id);
 
       if (bookshop.isPresent()) {
-         Bookshop updatedBook = bookshop.get();
+         Book updatedBook = bookshop.get();
          updatedBook.setTitle(book.getTitle());
-         updatedBook.setUserName(book.getUserName());
-         updatedBook.setDate(book.getDate());
+         updatedBook.setAuthor(book.getAuthor());
+         updatedBook.setPublishDate(book.getPublishDate());
 
          return Optional.of(repository.save(updatedBook));
       } else {

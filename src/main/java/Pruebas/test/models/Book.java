@@ -1,9 +1,6 @@
 package Pruebas.test.models;
 
-import java.awt.print.Book;
 import java.time.LocalDate;
-
-import org.springframework.data.annotation.CreatedDate;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -11,37 +8,36 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "users")
-@Data
+@Table(name = "BOOKS")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Bookshop {
+public class Book {
    @Id
    @GeneratedValue(strategy = GenerationType.IDENTITY)
    private Long id;
+
+   @Column(name = "TITLE")
    private String title;
 
-   @Column(name = "user_name")
-   private String userName;
+   @Column(name = "AUTHOR")
+   private String author;
 
-   @Column(name = "price")
+   @Column(name = "PRICE")
    private Double price;
 
-   @Column(name = "date_registry")
-   @CreatedDate
-   private LocalDate date;
+   @Column(name = "PUBLISH_DATE")
+   private LocalDate publishDate;
 
    @Override
    public String toString() {
-      return "Person [id=" + id + ", name=" + title + ", userName=" + userName + ", price=" + price + ", date=" + date + "]";
+      return "Person [id=" + id + ", name=" + title + ", author=" + author + ", price=" + price + ", publish_date=" + publishDate + "]";
    }
 
 }

@@ -1,13 +1,10 @@
 package Pruebas.test.repository;
 
-import java.util.List;
-
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
-import Pruebas.test.models.Bookshop;
+import Pruebas.test.models.Book;
 
-public interface BookRepository extends JpaRepository<Bookshop, Long> {
-
-   List<Bookshop> findByTitle(@Param("title") String title);
+@Repository
+public interface BookRepository extends JpaRepository<Book, Long> {
 }
